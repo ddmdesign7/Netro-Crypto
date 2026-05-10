@@ -10,9 +10,24 @@ interface NetroAIModalProps {
   title: string;
   content: string;
   isLoading: boolean;
+  loadingMessage?: string;
 }
 
-export const NetroAIModal: React.FC<NetroAIModalProps> = ({ isOpen, onClose, title, content, isLoading }) => {
+export const NetroAIModal: React.FC<NetroAIModalProps> = ({ 
+  isOpen, 
+  onClose, 
+  title, 
+  content, 
+  isLoading,
+  loadingMessage = "NetroAI is analyzing your data..."
+}) => {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(content);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
   return (
     <AnimatePresence>
       {isOpen && (
@@ -48,20 +63,31 @@ export const NetroAIModal: React.FC<NetroAIModalProps> = ({ isOpen, onClose, tit
             <div className="p-6 max-h-[70vh] overflow-y-auto">
               {isLoading ? (
                 <div className="flex flex-col items-center justify-center py-12 gap-4">
-                  <Loader2 className="w-10 h-10 text-blue-400 animate-spin" />
-                  <p className="text-gray-400 animate-pulse">NetroAI is analyzing your data...</p>
+                  <div className="relative">
+                    <Loader2 className="w-12 h-12 text-blue-400 animate-spin" />
+                    <Sparkles className="w-5 h-5 text-emerald-400 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-pulse" />
+                  </div>
+                  <p className="text-gray-400 font-medium animate-pulse">{loadingMessage}</p>
                 </div>
               ) : (
-                <div className="markdown-body">
+                <div className="markdown-body prose prose-invert max-w-none">
                   <Markdown>{content}</Markdown>
                 </div>
               )}
             </div>
 
-            <div className="p-4 bg-white/5 border-t border-white/10 flex justify-end">
+            <div className="p-4 bg-white/5 border-t border-white/10 flex justify-between items-center">
+              {!isLoading && content && (
+                <button
+                  onClick={handleCopy}
+                  className="px-4 py-2 text-sm font-medium text-gray-400 hover:text-white transition-colors flex items-center gap-2"
+                >
+                  {copied ? 'Copied!' : 'Copy Analysis'}
+                </button>
+              )}
               <button
                 onClick={onClose}
-                className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+                className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition-all shadow-lg shadow-blue-600/20"
               >
                 Close
               </button>
