@@ -40,6 +40,7 @@ import {
 import { MOCK_PORTFOLIO, MOCK_TRANSACTIONS, MOCK_TOKENS, MOCK_NFTS, Token, Transaction, NFT } from '@/src/types';
 import { NetroAIService } from '@/src/services/geminiService';
 import { NetroAIModal } from '@/src/components/NetroAIModal';
+import { LegalModal } from '@/src/components/LegalModal';
 import Markdown from 'react-markdown';
 
 export default function App() {
@@ -74,6 +75,15 @@ export default function App() {
   const [selectedNFT, setSelectedNFT] = useState<NFT | null>(null);
   const [nftSearch, setNftSearch] = useState('');
   const [nftFilter, setNftFilter] = useState<'all' | 'rare' | 'legendary'>('all');
+
+  // Legal Modal State
+  const [legalModal, setLegalModal] = useState<{
+    isOpen: boolean;
+    type: 'privacy' | 'terms' | 'security' | 'docs';
+  }>({
+    isOpen: false,
+    type: 'privacy'
+  });
 
   const sortedTokens = [...MOCK_TOKENS].sort((a, b) => {
     if (!sortConfig) return 0;
@@ -1333,14 +1343,41 @@ export default function App() {
             <span className="text-lg font-bold">NetroBank <span className="text-gray-500 font-medium">Web3 Evolution</span></span>
           </div>
           <div className="flex gap-8 text-sm font-bold text-gray-500 uppercase tracking-widest">
-            <a href="#" className="hover:text-white transition-colors">Privacy</a>
-            <a href="#" className="hover:text-white transition-colors">Terms</a>
-            <a href="#" className="hover:text-white transition-colors">Security</a>
-            <a href="#" className="hover:text-white transition-colors">Docs</a>
+            <button 
+              onClick={() => setLegalModal({ isOpen: true, type: 'privacy' })}
+              className="hover:text-white transition-colors"
+            >
+              Privacy
+            </button>
+            <button 
+              onClick={() => setLegalModal({ isOpen: true, type: 'terms' })}
+              className="hover:text-white transition-colors"
+            >
+              Terms
+            </button>
+            <button 
+              onClick={() => setLegalModal({ isOpen: true, type: 'security' })}
+              className="hover:text-white transition-colors"
+            >
+              Security
+            </button>
+            <button 
+              onClick={() => setLegalModal({ isOpen: true, type: 'docs' })}
+              className="hover:text-white transition-colors"
+            >
+              Docs
+            </button>
           </div>
-          <p className="text-gray-600 text-xs">© 2026 NetroBank. Non-financial advice.</p>
+          <p className="text-gray-600 text-xs text-center md:text-right">© 2026 NetroBank. Empowering your decentralized future. Non-financial advice.</p>
         </div>
       </footer>
+
+      {/* Legal Modals */}
+      <LegalModal 
+        isOpen={legalModal.isOpen}
+        onClose={() => setLegalModal(prev => ({ ...prev, isOpen: false }))}
+        type={legalModal.type}
+      />
     </div>
   );
 }
